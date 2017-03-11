@@ -29,23 +29,22 @@ var triviaGame = {
 	thisRound: [],
 	question: undefined,
 	correctAnswer: undefined,
-	lastRoundLastQuestion: 0;
+	nextRoundQuestionsStart: 0,
 
-	// Get a certain number of questions returned as an array
+	// Get a certain number of questions returned as an array, set next round to start at next index
 	getThisRoundOfQuestions: function(numberOfQuestions) {
-		if (questionAndAnswerBank.length < numberOfQuestions) {
+		if (triviaGame.questionAndAnswerBank.length < numberOfQuestions) {
 			console.log("Error: You don't have enough objects in your questionAndAnswerBank. Some questions will repeat.");
 		};
-		for (var i = lastRoundLastQuestion; i < numberOfQuestions; i++) {
-				var j = i % questionAndAnswerBank.length;
+		var questions = [];
+		for (var i = triviaGame.nextRoundQuestionsStart; i < numberOfQuestions; i++) {
+				j = i % triviaGame.questionAndAnswerBank.length;
+				questions.push(triviaGame.questionAndAnswerBank[j]);
 		};
+		nextRoundQuestionsSart = questions.length;
 		return questions;
 	},
 
-	// Start a round of trivia - is this necessary?
-	startRound: function(numberOfQuestions) {
-		triviaGame.thisRound = getThisRoundOfQuestions(numberOfQuestions);
-	},
 	getThisQuestion: function(qIndex){
 		return triviaGame.thisRound[qIndex].q;
 	},
@@ -54,25 +53,37 @@ var triviaGame = {
 		return triviaGame.thisRound[qIndex].ca
 	},
 	// Add the correct answer to the array of answers to display
-	addToAllAnswers: function(qIndex, correctAnswer) {
+	getAllAnswers: function(qIndex, correctAnswer) {
 		aIndex = Math.floor(Math.random() * 4);
-		triviaGame.thisRound[qIndex].aa.splice(aIndex, 0, correctAnswer)
+		triviaGame.thisRound[qIndex].aa.splice(aIndex, 0, correctAnswer);
+		return triviaGame.thisRound[qIndex].aa;
 	},
 	// Initialize the question to display
 	initializeQuestion: function(qIndex) {
-		triviaGame.question = getThisQuestion(qIndex);
-		triviaGame.correctAnswer = getCorrectAnswer(qIndex);
-		addToAllAnswers(qIndex, triviaGame.correctAnswer);
-		// triviaDisplay.question();
-		// triviaDisplay.answers();
+		triviaGame.question = triviaGame.getThisQuestion(qIndex);
+		triviaGame.correctAnswer = triviaGame.getCorrectAnswer(qIndex);
+		triviaGame.allAnswers = triviaGame.getAllAnswers(qIndex, triviaGame.correctAnswer);
+		triviaDisplay.initializeQADivs();
+		triviaDisplay.showQuestion(triviaGame.question);
+		triviaDisplay.showAnswers(triviaGame.allAnswers);
 	}, 
-	// If the question is correct, return yes
+	// If the question is correct, return Yup!, else Nope.
 	isCorrectAnswerString: function(userChoice) {
 		if (userChoise === triviaGame.correctAnswer) {
 			return 'Yup!';
 		} else {
 			return 'Nope.';
 		};
+	},
+	// Start question at qIndex and return next qIndex;
+	thisQuestionNextIndex: function(qIndex) {
+		triviaGame.initializeQuestion(qIndex);
+		return qIndex++;
+	},
+	// Start a round of trivia
+	startRound: function(numberOfQuestions) {
+		triviaGame.thisRound = triviaGame.getThisRoundOfQuestions(numberOfQuestions);
+		triviaGame.nextIndex = triviaGame.thisQuestionNextIndex(0);
 	},
 };
 
@@ -100,7 +111,7 @@ var triviaDisplay = {
 	},
 	// Appends the current question, in an h3 tag, to the question div
 	showQuestion: function(question) {
-				$('#question').append('<h3>' + question + '</h3>');
+		$('#question').append('<h3>' + question + '</h3>');
 	},
 	// Appends each answer, in a p tag, to an answer div with a unique id
 	showAnswers: function(answers) {
