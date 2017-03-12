@@ -60,7 +60,7 @@ var triviaGame = {
 	},
 	// Add the correct answer to the array of answers to display
 	getAllAnswers: function(qIndex, correctAnswer) {
-		aIndex = Math.floor(Math.random() * 4);
+		var aIndex = Math.floor(Math.random() * 4);
 		triviaGame.thisRound[qIndex].aa.splice(aIndex, 0, correctAnswer);
 		return triviaGame.thisRound[qIndex].aa;
 	},
@@ -202,7 +202,7 @@ var triviaDisplay = {
 	}
 };
 
-
+// TODO reset rightAnswer on round reset, make sure correct answers don't double up in the answers arrays
 $(document).ready(function() {
 	$('#startRound').click(function(){
 		triviaGame.startRound(triviaGame.numberOfQuestions)
