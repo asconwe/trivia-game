@@ -36,8 +36,14 @@ p {
 
 #question {
 	padding-bottom: 5px;
-	margin-bottom: 5px;
 	border-bottom: solid 1px #fff;
+}
+
+#timeoutBar {
+	margin-bottom: 10px;
+	height: 10px;
+	width: 100%;
+	background: rgba(255, 0, 0, 0.4);
 }
 
 .answerDiv {
@@ -46,6 +52,18 @@ p {
 
 .answerDiv:hover {
 	background: rgba(255, 255, 255, 0.1);
+}
+
+#feedback {
+	padding-bottom: 5px;
+	border-bottom: solid 1px #fff;
+}
+
+#next {
+	width: 100px;
+	text-align: center;
+	margin: 10px 0;
+	border: solid 1px #fff;
 }
 
 #startRound {
