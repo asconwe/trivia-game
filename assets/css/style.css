@@ -78,3 +78,9 @@ p {
 #results {
 	text-align: center;
 }
+
+@media (max-width: 500px) {
+	#display {
+		width: 400px;
+	}
+}
