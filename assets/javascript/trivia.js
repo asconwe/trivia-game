@@ -30,6 +30,8 @@ var triviaGame = {
 	question: undefined,
 	correctAnswer: undefined,
 	nextRoundQuestionsStart: 0,
+	rightAnswers: 0,
+	numberOfQuestions: 6,
 
 	// Get a certain number of questions returned as an array, set next round to start at next index
 	getThisRoundOfQuestions: function(numberOfQuestions) {
@@ -37,11 +39,12 @@ var triviaGame = {
 			console.log("Error: You don't have enough objects in your questionAndAnswerBank. Some questions will repeat.");
 		};
 		var questions = [];
-		for (var i = triviaGame.nextRoundQuestionsStart; i < numberOfQuestions; i++) {
-				j = i % triviaGame.questionAndAnswerBank.length;
+		for (var i = triviaGame.nextRoundQuestionsStart; i < numberOfQuestions + triviaGame.nextRoundQuestionsStart; i++) {
+				var j = i % triviaGame.questionAndAnswerBank.length;
 				questions.push(triviaGame.questionAndAnswerBank[j]);
 		};
-		nextRoundQuestionsSart = questions.length;
+		triviaGame.nextRoundQuestionsStart = questions.length;
+		console.log(triviaGame.nextRoundQuestionsStart);
 		return questions;
 	},
 	//
@@ -70,9 +73,10 @@ var triviaGame = {
 		triviaDisplay.showQuestion(triviaGame.question);
 		triviaDisplay.showAnswers(triviaGame.allAnswers);
 	}, 
-	// If the question is correct, return Yup!, else Nope.
+	// If the question is correct, increment rightAnswers and return Yup!, else Nope.
 	isCorrectAnswerString: function(userChoice) {
 		if (userChoice === triviaGame.correctAnswer) {
+			triviaGame.rightAnswers++;
 			return 'Yup!';
 		} else {
 			return 'Nope.';
@@ -102,18 +106,21 @@ var triviaDisplay = {
 		triviaDisplay.displayDiv.empty();
 		return triviaDisplay.displayDiv;
 	},
-	initializeAnswerClick: function() {
+	timeoutFeedback: function() {
+		setTimeout(function(){
+			if (triviaGame.isRoundOver()) {
+				triviaDisplay.showResults(triviaGame.rightAnswers, triviaGame.thisRound.length);
+			} else {
+				triviaGame.nextIndex = triviaGame.thisQuestionNextIndex(triviaGame.nextIndex);
+			};
+		}, 200);
+	},
+	setAnswerClickHandler: function() {
 		$('.answerDiv').click(function() {
 			console.log($(this));
 			var isCorrectString = triviaGame.isCorrectAnswerString($(this).text());
-			triviaDisplay.showFeedback(isCorrectString, triviaGame.question, triviaGame.correctAnswer, 0);
-			setTimeout(function(){
-				if (triviaGame.isRoundOver()) {
-					triviaDisplay.showResults();
-				} else {
-					triviaGame.nextIndex = triviaGame.thisQuestionNextIndex(triviaGame.nextIndex);
-				};
-			}, 3000);
+			triviaDisplay.showFeedback(isCorrectString, triviaGame.question, triviaGame.correctAnswer, triviaGame.rightAnswers, triviaGame.nextIndex);
+			triviaDisplay.timeoutFeedback();
 		});
 	},
 	// Appends question and answer divs to the display
@@ -123,7 +130,7 @@ var triviaDisplay = {
 		for (var i = 0; i < 4; i++){
 			target.append('<div class="answerDiv" id="answer' + i + '"></div>');
 		};
-		triviaDisplay.initializeAnswerClick();
+		triviaDisplay.setAnswerClickHandler();
 	},
 	// Appends the current question, in an h3 tag, to the question div
 	showQuestion: function(question) {
@@ -144,12 +151,12 @@ var triviaDisplay = {
 		target.append('<div id="progress"></div>');
 	},
 	// Appends content to feedback divs
-	showFeedback: function(isCorrectString, question, correctAnswer, progress) {
+	showFeedback: function(isCorrectString, question, correctAnswer, rightAnswers, progress) {
 		triviaDisplay.initializeFeedbackDivs();
 		$('#feedback').append('<h3>' + isCorrectString + '</h3>');
 		$('#question').append('<h3>' + question + '</h3>');
 		$('#answer').append('<p>' + correctAnswer + '</p>');
-		$('#progress').append('<p>' + progress + '</p>');
+		$('#progress').append('<p>' + rightAnswers + ' / ' + progress + '</p>');
 	},
 	// Appends divs for fomatting results
 	initializeResultsDivs: function() {
@@ -157,14 +164,23 @@ var triviaDisplay = {
 		target.append('<div id="results"></div>');
 		target.append('<div id="retry"></div>');
 	}, 
-	showResults: function() {
+	setTryAgainClickHandler: function() {
+		$('#startRound').click(function(){
+			triviaGame.startRound(triviaGame.numberOfQuestions)
+		})
+	},
+	showResults: function(rightAnswers, progress) {
 		triviaDisplay.initializeResultsDivs();
-		$('#results').append('results');
+		$('#results').append('<h1>How\'d you do?</h1>')
+		$('#results').append('<h2>' + rightAnswers + ' / ' + progress + '</h2>');
+		$('#results').append('<div id="startRound"><h3>Try again?</h3></div>');
+		triviaDisplay.setTryAgainClickHandler();
 	}
 };
 
 
 $(document).ready(function() {
-	triviaGame.startRound(10)
-	console.log('hey');
+	$('#startRound').click(function(){
+		triviaGame.startRound(triviaGame.numberOfQuestions)
+	})
 });

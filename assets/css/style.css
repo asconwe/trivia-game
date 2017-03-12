@@ -33,3 +33,30 @@ p {
 	margin-left: auto;
 	margin-right: auto;
 }
+
+#question {
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	border-bottom: solid 1px #fff;
+}
+
+.answerDiv {
+	padding-left: 30px;
+}
+
+.answerDiv:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+#startRound {
+	margin-top: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100px;
+	text-align: center;
+	border: solid 1px #fff;
+}
+
+#results {
+	text-align: center;
+}
