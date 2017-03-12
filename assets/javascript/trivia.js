@@ -25,7 +25,7 @@ else
 
 
 var triviaGame = {
-	questionAndAnswerBank: [{q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}],
+	questionAndAnswerBank: [{q: 'The chipmunk\'s genus, Tamias, is greek for:', ca: 'Steward', aa: ['Jester', 'Child of the Tree', 'Lord of War']}, {q: 'Chipmunks are:', ca: 'Omniverous', aa: ['Carniverous', 'Herbiverous', 'Soul eaters of the nether realm']}, {q: 'Baby chipmunks emerge from the burrow they were born in after:', ca: '6 weeks', aa: ['1,000 years', '20 weeks', '1 week']}, {q: 'Eastern chipmunks hibernate:', ca: 'In the winter', aa: ['In the summer', 'On weekends', 'On the moon']}, {q: 'One chipmunk subgenus is named:', ca: 'Allen\'s chipmunk', aa: ['Doug\'s chipmunk', 'Mr. Chipmunk', 'Alfred\'s chipmunk']}, {q: 'Chipmunks are an important vector for the dispersal of:', ca: 'sporocarps', aa: ['corosparks', 'sorcoparps', 'roroskarks']}, {q: 'Chipmunks are:', ca: 'Mammals', aa: ['Reptiles', 'Your worst nightmare', 'Androids']}, {q: 'Chipmunks carry food in their:', ca: 'Cheek pouches', aa: ['Backpack', 'Briefcase', 'Purse']}, {q: 'The English word, "chipmunk", first appeared in:', ca: 'The early 19th century', aa: ['2007', 'The early 16th century', 'The late 15th century']}, {q: 'Before chipmunk became a common word, they were also frequently called', ca: 'Striped Squirrels', aa: ['Jerks', 'Tree Foxes', 'Leaf Sharks']}, {q: 'The chipmunk kingdom is:', ca: 'Animalia', aa: ['Plantae', 'Fungi', 'Protista']}, {q: 'What is my name', ca: 'August', aa: ['Tony', 'Joe', 'Alligator']}, {q: 'Neotamias is:', ca: 'An alternate classification for western chipmunks', aa: ['The main character of \'The Chipmunk Matrix\'', 'A commander in the chipmunk empire army (BCE 1200)', 'An economic theory inspired by chipmunk food storage']}],
 	thisRound: [],
 	question: undefined,
 	correctAnswer: undefined,
@@ -44,7 +44,10 @@ var triviaGame = {
 		nextRoundQuestionsSart = questions.length;
 		return questions;
 	},
-
+	//
+	isRoundOver: function() {
+		return (triviaGame.nextIndex >= triviaGame.thisRound.length);
+	},
 	getThisQuestion: function(qIndex){
 		return triviaGame.thisRound[qIndex].q;
 	},
@@ -69,7 +72,7 @@ var triviaGame = {
 	}, 
 	// If the question is correct, return Yup!, else Nope.
 	isCorrectAnswerString: function(userChoice) {
-		if (userChoise === triviaGame.correctAnswer) {
+		if (userChoice === triviaGame.correctAnswer) {
 			return 'Yup!';
 		} else {
 			return 'Nope.';
@@ -78,7 +81,7 @@ var triviaGame = {
 	// Start question at qIndex and return next qIndex;
 	thisQuestionNextIndex: function(qIndex) {
 		triviaGame.initializeQuestion(qIndex);
-		return qIndex++;
+		return qIndex + 1;
 	},
 	// Start a round of trivia
 	startRound: function(numberOfQuestions) {
@@ -86,8 +89,6 @@ var triviaGame = {
 		triviaGame.nextIndex = triviaGame.thisQuestionNextIndex(0);
 	},
 };
-
-
 
 var triviaDisplay = {
 	// The display div defaults to #display
@@ -97,9 +98,23 @@ var triviaDisplay = {
 		triviaDisplay.displayDiv = $(target);
 	},
 	// Empties the display div and returns the display div
-	getResetDisplay: function(){
+	getResetDisplay: function() {
 		triviaDisplay.displayDiv.empty();
 		return triviaDisplay.displayDiv;
+	},
+	initializeAnswerClick: function() {
+		$('.answerDiv').click(function() {
+			console.log($(this));
+			var isCorrectString = triviaGame.isCorrectAnswerString($(this).text());
+			triviaDisplay.showFeedback(isCorrectString, triviaGame.question, triviaGame.correctAnswer, 0);
+			setTimeout(function(){
+				if (triviaGame.isRoundOver()) {
+					triviaDisplay.showResults();
+				} else {
+					triviaGame.nextIndex = triviaGame.thisQuestionNextIndex(triviaGame.nextIndex);
+				};
+			}, 3000);
+		});
 	},
 	// Appends question and answer divs to the display
 	initializeQADivs: function() {
@@ -108,6 +123,7 @@ var triviaDisplay = {
 		for (var i = 0; i < 4; i++){
 			target.append('<div class="answerDiv" id="answer' + i + '"></div>');
 		};
+		triviaDisplay.initializeAnswerClick();
 	},
 	// Appends the current question, in an h3 tag, to the question div
 	showQuestion: function(question) {
@@ -123,12 +139,15 @@ var triviaDisplay = {
 	initializeFeedbackDivs: function() {
 		var target = triviaDisplay.getResetDisplay();
 		target.append('<div id="feedback"></div>');
-		target.append('<div id="#answer"></div>');
-		target.append('<div id="progress"');
+		target.append('<div id="question"></div>');
+		target.append('<div id="answer"></div>');
+		target.append('<div id="progress"></div>');
 	},
 	// Appends content to feedback divs
-	showFeedback: function(isCorrectString, correctAnswer, progress) {
+	showFeedback: function(isCorrectString, question, correctAnswer, progress) {
+		triviaDisplay.initializeFeedbackDivs();
 		$('#feedback').append('<h3>' + isCorrectString + '</h3>');
+		$('#question').append('<h3>' + question + '</h3>');
 		$('#answer').append('<p>' + correctAnswer + '</p>');
 		$('#progress').append('<p>' + progress + '</p>');
 	},
@@ -139,6 +158,13 @@ var triviaDisplay = {
 		target.append('<div id="retry"></div>');
 	}, 
 	showResults: function() {
-		$('#results').append()
+		triviaDisplay.initializeResultsDivs();
+		$('#results').append('results');
 	}
 };
+
+
+$(document).ready(function() {
+	triviaGame.startRound(10)
+	console.log('hey');
+});

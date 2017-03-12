@@ -1,0 +1,35 @@
+body {
+	color: #edf;
+	background: #101320;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 100;
+	padding-top: 60px;
+}
+
+h1, h2, h3 {
+	padding: 10px 0;
+}
+
+h1 {
+	font-size: 3em;
+	text-align: center;
+}
+
+h2 {
+	font-size: 2em;
+}
+
+h3 {
+	font-size: 1.5em;
+}
+
+p {
+	font-size: 1.3em;
+	padding: 10px 0;
+}
+
+#display {
+	width: 450px;
+	margin-left: auto;
+	margin-right: auto;
+}
