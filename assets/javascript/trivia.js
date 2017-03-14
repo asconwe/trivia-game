@@ -25,7 +25,7 @@ else
 
 
 var triviaGame = {
-	questionAndAnswerBank: [{q: 'The chipmunk\'s genus, Tamias, is greek for:', ca: 'Steward', aa: ['Jester', 'Child of the Tree', 'Lord of War']}, {q: 'Chipmunks are:', ca: 'Omniverous', aa: ['Carniverous', 'Herbiverous', 'Soul eaters of the nether realm']}, {q: 'Baby chipmunks emerge from the burrow they were born in after:', ca: '6 weeks', aa: ['1,000 years', '20 weeks', '1 week']}, {q: 'Eastern chipmunks hibernate:', ca: 'In the winter', aa: ['In the summer', 'On weekends', 'On the moon']}, {q: 'One chipmunk subgenus is named:', ca: 'Allen\'s chipmunk', aa: ['Doug\'s chipmunk', 'Mr. Chipmunk', 'Alfred\'s chipmunk']}, {q: 'Chipmunks are an important vector for the dispersal of:', ca: 'sporocarps', aa: ['corosparks', 'sorcoparps', 'roroskarks']}, {q: 'Chipmunks are:', ca: 'Mammals', aa: ['Reptiles', 'Your worst nightmare', 'Androids']}, {q: 'Chipmunks carry food in their:', ca: 'Cheek pouches', aa: ['Backpack', 'Briefcase', 'Purse']}, {q: 'The English word, "chipmunk", first appeared in:', ca: 'The early 19th century', aa: ['2007', 'The early 16th century', 'The late 15th century']}, {q: 'Before chipmunk became a common word, they were also frequently called', ca: 'Striped Squirrels', aa: ['Jerks', 'Tree Foxes', 'Leaf Sharks']}, {q: 'The chipmunk kingdom is:', ca: 'Animalia', aa: ['Plantae', 'Fungi', 'Protista']}, {q: 'Neotamias is:', ca: 'An alternate classification for western chipmunks', aa: ['The main character of \'The Chipmunk Matrix\'', 'A commander in the chipmunk empire army (BCE 1200)', 'An economic theory inspired by chipmunk food storage']}],
+	questionAndAnswerBank: [{q: 'The chipmunk\'s genus, Tamias, is greek for:', ca: 'Steward', aa: [], wa: ['Jester', 'Child of the Tree', 'Lord of War']}, {q: 'Chipmunks are:', ca: 'Omniverous', aa: [], wa: ['Carniverous', 'Herbiverous', 'Soul eaters of the nether realm']}, {q: 'Baby chipmunks emerge from the burrow they were born in after:', ca: '6 weeks', aa: [], wa: ['1,000 years', '20 weeks', '1 week']}, {q: 'Eastern chipmunks hibernate:', ca: 'In the winter', aa: [], wa: ['In the summer', 'On weekends', 'On the moon']}, {q: 'One chipmunk subgenus is named:', ca: 'Allen\'s chipmunk', aa: [], wa: ['Doug\'s chipmunk', 'Mr. Chipmunk', 'Alfred\'s chipmunk']}, {q: 'Chipmunks are an important vector for the dispersal of:', ca: 'sporocarps', aa: [], wa: ['corosparks', 'sorcoparps', 'roroskarks']}, {q: 'Chipmunks are:', ca: 'Mammals', aa: [], wa: ['Reptiles', 'Your worst nightmare', 'Androids']}, {q: 'Chipmunks carry food in their:', ca: 'Cheek pouches', aa: [], wa: ['Backpack', 'Briefcase', 'Purse']}, {q: 'The English word, "chipmunk", first appeared in:', ca: 'The early 19th century', aa: [], wa: ['2007', 'The early 16th century', 'The late 15th century']}, {q: 'Before chipmunk became a common word, they were also frequently called', ca: 'Striped Squirrels', aa: [], wa: ['Jerks', 'Tree Foxes', 'Leaf Sharks']}, {q: 'The chipmunk kingdom is:', ca: 'Animalia', aa: [], wa: ['Plantae', 'Fungi', 'Protista']}, {q: 'Neotamias is:', ca: 'An alternate classification for western chipmunks', aa: [], wa: ['The main character of \'The Chipmunk Matrix\'', 'A commander in the chipmunk empire army (BCE 1200)', 'An economic theory inspired by chipmunk food storage']}],
 	thisRound: [],
 	question: undefined,
 	correctAnswer: undefined,
@@ -43,14 +43,15 @@ var triviaGame = {
 				var j = i % triviaGame.questionAndAnswerBank.length;
 				questions.push(triviaGame.questionAndAnswerBank[j]);
 		};
-		triviaGame.nextRoundQuestionsStart = questions.length;
+		triviaGame.nextRoundQuestionsStart += questions.length;
 		console.log(triviaGame.nextRoundQuestionsStart);
 		return questions;
 	},
-	//
+	// If the round of questions is over, return true
 	isRoundOver: function() {
 		return (triviaGame.nextIndex >= triviaGame.thisRound.length);
 	},
+	// Return the active trivia question
 	getThisQuestion: function(qIndex){
 		return triviaGame.thisRound[qIndex].q;
 	},
@@ -61,6 +62,7 @@ var triviaGame = {
 	// Add the correct answer to the array of answers to display
 	getAllAnswers: function(qIndex, correctAnswer) {
 		var aIndex = Math.floor(Math.random() * 4);
+		$.extend(triviaGame.thisRound[qIndex].aa, triviaGame.thisRound[qIndex].wa); // Need to use $.extend() so that when the aa object is edited, it doesn't affect the wa object
 		triviaGame.thisRound[qIndex].aa.splice(aIndex, 0, correctAnswer);
 		return triviaGame.thisRound[qIndex].aa;
 	},
@@ -89,6 +91,7 @@ var triviaGame = {
 	},
 	// Start a round of trivia
 	startRound: function(numberOfQuestions) {
+		triviaGame.rightAnswers = 0;
 		triviaGame.thisRound = triviaGame.getThisRoundOfQuestions(numberOfQuestions);
 		triviaGame.nextIndex = triviaGame.thisQuestionNextIndex(0);
 	},
@@ -115,6 +118,7 @@ var triviaDisplay = {
 	// 		};
 	// 	}, 200);
 	// },
+	// Add click handler to newly created answer divs
 	setAnswerClickHandler: function() {
 		$('.answerDiv').click(function() {
 			clearInterval(triviaGame.countdownInterval)
@@ -143,12 +147,13 @@ var triviaDisplay = {
 			$('#answer' + i).append('<p>' + answers[i] + '</p>');
 		};
 	},
+	// Set timer and display/update countdown bar
 	countdown: function() {
-		var width = 100;
+		var width = 0;
 		$('#timeoutBar').css('width', width + '%');
 		triviaGame.countdownInterval = setInterval(function(){
-			width -= 10;
-			if (width <= 0) {
+			width += 10;
+			if (width >= 110) {
 				triviaDisplay.showFeedback('No answer is still a wrong answer, slacker.', triviaGame.question, triviaGame.correctAnswer, triviaGame.rightAnswers, triviaGame.nextIndex);
 				clearInterval(triviaGame.countdownInterval);
 			};
@@ -164,6 +169,7 @@ var triviaDisplay = {
 		target.append('<div id="progress"></div>');
 		target.append('<div id="next"><h3>Next</h3></div>');
 	},
+	// Add a click handler to the newly created Next button
 	setNextClickHandler: function() {
 		$('#next').click(function(){
 			if (triviaGame.isRoundOver()) {
@@ -176,10 +182,10 @@ var triviaDisplay = {
 	// Appends content to feedback divs
 	showFeedback: function(isCorrectString, question, correctAnswer, rightAnswers, progress) {
 		triviaDisplay.initializeFeedbackDivs();
-		$('#feedback').append('<h3>' + isCorrectString + '</h3>');
+		$('#feedback').append('<h1>' + isCorrectString + '</h1>');
 		$('#questionFeedback').append('<h3>' + question + '</h3>');
 		$('#answer').append('<p>' + correctAnswer + '</p>');
-		$('#progress').append('<p>' + rightAnswers + ' / ' + progress + '</p>');
+		$('#progress').append('<p>' + rightAnswers + ' / ' + progress + ' so far.</p>');
 		triviaDisplay.setNextClickHandler();
 	},
 	// Appends divs for fomatting results
@@ -188,11 +194,13 @@ var triviaDisplay = {
 		target.append('<div id="results"></div>');
 		target.append('<div id="retry"></div>');
 	}, 
+	// Add click handler to newly created Try Again button
 	setTryAgainClickHandler: function() {
 		$('#startRound').click(function(){
 			triviaGame.startRound(triviaGame.numberOfQuestions)
 		})
 	},
+	// Show the results of the quiz
 	showResults: function(rightAnswers, progress) {
 		triviaDisplay.initializeResultsDivs();
 		$('#results').append('<h1>How\'d you do?</h1>')
