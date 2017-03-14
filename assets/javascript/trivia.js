@@ -23,7 +23,7 @@ if isLastQuestion()
 else 
 	run this question function again */
 
-
+// Holds trivia game logic and info
 var triviaGame = {
 	questionAndAnswerBank: [{q: 'The chipmunk\'s genus, Tamias, is greek for:', ca: 'Steward', aa: [], wa: ['Jester', 'Child of the Tree', 'Lord of War']}, {q: 'Chipmunks are:', ca: 'Omniverous', aa: [], wa: ['Carniverous', 'Herbiverous', 'Soul eaters of the nether realm']}, {q: 'Baby chipmunks emerge from the burrow they were born in after:', ca: '6 weeks', aa: [], wa: ['1,000 years', '20 weeks', '1 week']}, {q: 'Eastern chipmunks hibernate:', ca: 'In the winter', aa: [], wa: ['In the summer', 'On weekends', 'On the moon']}, {q: 'One chipmunk subgenus is named:', ca: 'Allen\'s chipmunk', aa: [], wa: ['Doug\'s chipmunk', 'Mr. Chipmunk', 'Alfred\'s chipmunk']}, {q: 'Chipmunks are an important vector for the dispersal of:', ca: 'sporocarps', aa: [], wa: ['corosparks', 'sorcoparps', 'roroskarks']}, {q: 'Chipmunks are:', ca: 'Mammals', aa: [], wa: ['Reptiles', 'Your worst nightmare', 'Androids']}, {q: 'Chipmunks carry food in their:', ca: 'Cheek pouches', aa: [], wa: ['Backpack', 'Briefcase', 'Purse']}, {q: 'The English word, "chipmunk", first appeared in:', ca: 'The early 19th century', aa: [], wa: ['2007', 'The early 16th century', 'The late 15th century']}, {q: 'Before chipmunk became a common word, they were also frequently called', ca: 'Striped Squirrels', aa: [], wa: ['Jerks', 'Tree Foxes', 'Leaf Sharks']}, {q: 'The chipmunk kingdom is:', ca: 'Animalia', aa: [], wa: ['Plantae', 'Fungi', 'Protista']}, {q: 'Neotamias is:', ca: 'An alternate classification for western chipmunks', aa: [], wa: ['The main character of \'The Chipmunk Matrix\'', 'A commander in the chipmunk empire army (BCE 1200)', 'An economic theory inspired by chipmunk food storage']}],
 	thisRound: [],
@@ -37,12 +37,12 @@ var triviaGame = {
 	getThisRoundOfQuestions: function(numberOfQuestions) {
 		if (triviaGame.questionAndAnswerBank.length < numberOfQuestions) {
 			console.log("Error: You don't have enough objects in your questionAndAnswerBank. Some questions will repeat.");
-		};
+		}
 		var questions = [];
 		for (var i = triviaGame.nextRoundQuestionsStart; i < numberOfQuestions + triviaGame.nextRoundQuestionsStart; i++) {
 				var j = i % triviaGame.questionAndAnswerBank.length;
 				questions.push(triviaGame.questionAndAnswerBank[j]);
-		};
+		}
 		triviaGame.nextRoundQuestionsStart += questions.length;
 		console.log(triviaGame.nextRoundQuestionsStart);
 		return questions;
@@ -57,7 +57,7 @@ var triviaGame = {
 	},
 	// Retrun the correct answer from the question answer object
 	getCorrectAnswer: function(qIndex) {
-		return triviaGame.thisRound[qIndex].ca
+		return triviaGame.thisRound[qIndex].ca;
 	},
 	// Add the correct answer to the array of answers to display
 	getAllAnswers: function(qIndex, correctAnswer) {
@@ -80,9 +80,8 @@ var triviaGame = {
 		if (userChoice === triviaGame.correctAnswer) {
 			triviaGame.rightAnswers++;
 			return 'Yup!';
-		} else {
-			return 'Nope.';
-		};
+		}
+		return 'Nope.';
 	},
 	// Start question at qIndex and return next qIndex;
 	thisQuestionNextIndex: function(qIndex) {
@@ -96,7 +95,7 @@ var triviaGame = {
 		triviaGame.nextIndex = triviaGame.thisQuestionNextIndex(0);
 	},
 };
-
+// Displays the trivia game
 var triviaDisplay = {
 	// The display div defaults to #display
 	displayDiv: $('#display'),
@@ -121,7 +120,7 @@ var triviaDisplay = {
 	// Add click handler to newly created answer divs
 	setAnswerClickHandler: function() {
 		$('.answerDiv').click(function() {
-			clearInterval(triviaGame.countdownInterval)
+			clearInterval(triviaGame.countdownInterval);;;
 			var isCorrectString = triviaGame.isCorrectAnswerString($(this).text());
 			triviaDisplay.showFeedback(isCorrectString, triviaGame.question, triviaGame.correctAnswer, triviaGame.rightAnswers, triviaGame.nextIndex);
 		});
@@ -130,10 +129,10 @@ var triviaDisplay = {
 	initializeQADivs: function() {
 		var target = triviaDisplay.getResetDisplay();
 		target.append('<div id="question"></div>');
-		target.append('<div id="timeoutBar"></div>')
+		target.append('<div id="timeoutBar"></div>');
 		for (var i = 0; i < 4; i++){
 			target.append('<div class="answerDiv" id="answer' + i + '"></div>');
-		};
+		}
 		triviaDisplay.setAnswerClickHandler();
 	},
 	// Appends the current question, in an h3 tag, to the question div
@@ -145,7 +144,7 @@ var triviaDisplay = {
 	showAnswers: function(answers) {
 		for (var i = 0; i < 4; i++) {
 			$('#answer' + i).append('<p>' + answers[i] + '</p>');
-		};
+		}
 	},
 	// Set timer and display/update countdown bar
 	countdown: function() {
@@ -156,7 +155,7 @@ var triviaDisplay = {
 			if (width >= 110) {
 				triviaDisplay.showFeedback('No answer is still a wrong answer, slacker.', triviaGame.question, triviaGame.correctAnswer, triviaGame.rightAnswers, triviaGame.nextIndex);
 				clearInterval(triviaGame.countdownInterval);
-			};
+			}
 			$('#timeoutBar').css('width', width + '%');
 		}, 1000);
 	},
@@ -176,7 +175,7 @@ var triviaDisplay = {
 				triviaDisplay.showResults(triviaGame.rightAnswers, triviaGame.thisRound.length);
 			} else {
 				triviaGame.nextIndex = triviaGame.thisQuestionNextIndex(triviaGame.nextIndex);
-			};
+			}
 		});
 	},
 	// Appends content to feedback divs
@@ -197,22 +196,22 @@ var triviaDisplay = {
 	// Add click handler to newly created Try Again button
 	setTryAgainClickHandler: function() {
 		$('#startRound').click(function(){
-			triviaGame.startRound(triviaGame.numberOfQuestions)
-		})
+			triviaGame.startRound(triviaGame.numberOfQuestions);
+		});
 	},
 	// Show the results of the quiz
 	showResults: function(rightAnswers, progress) {
 		triviaDisplay.initializeResultsDivs();
-		$('#results').append('<h1>How\'d you do?</h1>')
+		$('#results').append('<h1>How\'d you do?</h1>');;;
 		$('#results').append('<h2>' + rightAnswers + ' / ' + progress + '</h2>');
 		$('#results').append('<div id="startRound"><h3>Try again?</h3></div>');
 		triviaDisplay.setTryAgainClickHandler();
 	}
 };
 
-// TODO reset rightAnswer on round reset, make sure correct answers don't double up in the answers arrays
+
 $(document).ready(function() {
 	$('#startRound').click(function(){
-		triviaGame.startRound(triviaGame.numberOfQuestions)
-	})
+		triviaGame.startRound(triviaGame.numberOfQuestions);
+	});
 });

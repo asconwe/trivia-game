@@ -48,6 +48,7 @@ p {
 
 .answerDiv {
 	padding-left: 30px;
+	cursor: pointer;
 }
 
 .answerDiv:hover {
@@ -64,6 +65,7 @@ p {
 	text-align: center;
 	margin: 10px 0;
 	border: solid 1px #fff;
+	cursor: pointer;
 }
 
 #startRound {
@@ -73,6 +75,7 @@ p {
 	width: 100px;
 	text-align: center;
 	border: solid 1px #fff;
+	cursor: pointer;
 }
 
 #results {
